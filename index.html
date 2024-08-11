@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lugares de interes para niños</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 20px;
+        }
+
+        #map {
+            width: 100%;
+            height: 80vh;
+            margin: 0 auto;
+        }
+
+        #sidebar {
+            width: 20%;
+            float: left;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f9f9f9;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #map-container {
+            width: 80%;
+            float: left;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <h1>Lugares de interes para niños en Madrid</h1>
+    <div id="sidebar">
+        <h2>Listado de Lugares</h2>
+        <ul id="places-list">
+            <!-- Lugares serán añadidos aquí por JavaScript -->
+        </ul>
+    </div>
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Coordenadas de la casa donde se alojan
+            var casa = { nombre: "Apartamento", coordenadas: [40.41015457856664, -3.696116149013828] };
+
+            var lugaresDeInteres = [
+                casa,  // Añadir la casa al principio del array
+                { nombre: "Parque del Retiro", coordenadas: [40.415363, -3.684714] },
+                { nombre: "Madrid Río", coordenadas: [40.398505, -3.718889] },
+                { nombre: "Biblioteca Pública Eugenio Trías", coordenadas: [40.412352, -3.681108] },
+                { nombre: "Parque Juan Carlos I", coordenadas: [40.462898, -3.610486] },
+                { nombre: "Biblioteca Pública Municipal Iván de Vargas", coordenadas: [40.411913, -3.712305] },
+                { nombre: "Parque de Atracciones de Madrid (Zona Verde)", coordenadas: [40.412805, -3.745293] },
+                { nombre: "Biblioteca Pública Municipal José Acuña", coordenadas: [40.430431, -3.708606] },
+                { nombre: "Jardines de Sabatini", coordenadas: [40.421873, -3.714973] },
+                { nombre: "Parque Madrid Rio", coordenadas: [40.41387147149608, -3.723687615697248] },
+                
+            ];
+
+            // Crear el mapa
+            var map = L.map('map').setView([40.416775, -3.703790], 12);
+
+            // Cargar y mostrar el mapa de OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+            }).addTo(map);
+
+            // Icono personalizado para la casa
+            var casaIcono = L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/25/25694.png',  // URL de un icono de casa
+                iconSize: [30, 30],  // Tamaño del icono
+                iconAnchor: [15, 30],  // Punto del icono que corresponde a la posición en el mapa
+            });
+
+            // Añadir los marcadores y listado
+            lugaresDeInteres.forEach(function(lugar) {
+                var opcionesMarcador = {};
+                
+                if (lugar === casa) {
+                    opcionesMarcador.icon = casaIcono;  // Usar el icono de la casa
+                }
+
+                var marker = L.marker(lugar.coordenadas, opcionesMarcador).addTo(map)
+                    .bindPopup(`<b>${lugar.nombre}</b>`)
+                    .on('click', function() {
+                        map.setView(lugar.coordenadas, 15);
+                    });
+
+                // Añadir al listado lateral
+                var listItem = document.createElement('li');
+                var link = document.createElement('a');
+                link.innerHTML = lugar.nombre;
+                link.onclick = function() {
+                    map.setView(lugar.coordenadas, 15);
+                    marker.openPopup();
+                };
+                listItem.appendChild(link);
+                document.getElementById('places-list').appendChild(listItem);
+            });
+        });
+    </script>
+</body>
+</html>
